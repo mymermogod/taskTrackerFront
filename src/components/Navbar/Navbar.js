@@ -1,0 +1,73 @@
+import React, { useState } from 'react';
+import { FaLayerGroup, FaTimes } from 'react-icons/fa';
+import { CgMenuRight } from 'react-icons/cg';
+import { IconContext } from 'react-icons';
+import {
+	Nav,
+	NavbarContainer,
+	NavLogo,
+	MobileIcon,
+	NavMenu,
+	NavLinks,
+	NavItem,
+} from './NavbarStyles.js';
+import { useLocation, useHistory } from 'react-router-dom';
+import { data } from '../../data/NavbarData';
+
+const Navbar = () => {
+	const [show, setShow] = useState(false);
+
+	let history = useHistory();
+	let location = useLocation();
+
+	const handleClick = () => {
+		setShow(!show);
+	};
+
+	const scrollTo = (id) => {
+		const element = document.getElementById(id);
+
+		element.scrollIntoView({
+			behavior: 'smooth',
+		});
+	};
+
+	const closeMobileMenu = (to, id) => {
+		if (id && location.pathname === '/') {
+			scrollTo(id);
+		}
+
+		history.push(to);
+		setShow(false);
+	};
+
+	return (
+		<IconContext.Provider value={{ color: '#fff' }}>
+			<Nav>
+				<NavbarContainer>
+					<NavLogo to="/">
+						<FaLayerGroup size={50} color='white' style={{marginRight:'7px'}}/>
+						Task Tracker
+					</NavLogo>
+					<MobileIcon onClick={handleClick}>
+						{show ? <FaTimes /> : <CgMenuRight />}
+					</MobileIcon>
+					{location.pathname === '/signup' || location.pathname === '/editForm' ? '' 
+					: 
+					<NavMenu show={show}>
+						{data.map((el, index) => (
+							<NavItem key={index}>
+								<NavLinks onClick={() => closeMobileMenu(el.to, el.id)}>
+									{el.text}
+								</NavLinks>
+							</NavItem>
+						))}
+					</NavMenu>}
+					
+				</NavbarContainer>
+			</Nav>
+		</IconContext.Provider>
+	);
+};
+
+export default Navbar;
